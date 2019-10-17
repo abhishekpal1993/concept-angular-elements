@@ -1,16 +1,26 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, Injector } from '@angular/core';
+import { createCustomElement } from '@angular/elements';
 
-import { AppComponent } from './app.component';
+import { FreeLearningComponent } from './free-learning/free-learning.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    FreeLearningComponent,
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  entryComponents: [
+    FreeLearningComponent
+  ]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(private injector: Injector) { }
+  ngDoBootstrap() {
+    const freeLearningComponent = createCustomElement(FreeLearningComponent,
+      { injector: this.injector });
+    customElements.define('packt-magento-dropin-free-learning', freeLearningComponent);
+  }
+}
