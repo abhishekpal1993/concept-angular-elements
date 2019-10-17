@@ -3,8 +3,6 @@ const cheerio = require('cheerio');
 const logger = require('debug')('bundle.js');
 const concat = require('concat');
 
-const element = 'packt-magento-dropin-free-learning';
-
 (async function build() {
     try {
         // clean up if already exists
@@ -15,8 +13,8 @@ const element = 'packt-magento-dropin-free-learning';
 
         // parsing index.html
         const htmlContent = await fs.readFile('./dist/magento-dropin/index.html');
-        const $ = cheerio.load(htmlContent.toString());
-        const files = $('script').get()
+        const $1 = cheerio.load(htmlContent.toString());
+        const files = $1('script').get()
             .map(item => `./dist/magento-dropin/${item.attribs.src}`);
         logger('Scripts found:', files);
 
@@ -36,7 +34,12 @@ const element = 'packt-magento-dropin-free-learning';
         await fs.copyFile('./dist/magento-dropin/scripts.js', './dist/bundle/magento-dropin-scripts.js');
         logger('Generated:', './dist/bundle/magento-dropin-scripts.js');
 
-        // generating testing index.html
+        // generating index.html from src/index.html
+        const indexHtmlContent = await fs.readFile('./src/index.html');
+        const $2 = cheerio.load(htmlContent.toString());
+        const element = cheerio.html(
+          $2('body').children().first()
+        );
         const indexHtml = `<!doctype html>
         <html lang="en">
         <head>
@@ -46,7 +49,7 @@ const element = 'packt-magento-dropin-free-learning';
           <meta name="viewport" content="width=device-width, initial-scale=1">
         </head>
         <body>
-          <${element}></${element}>
+          ${element}
           <script src="magento-dropin-es2015.js" type="module"></script>
           <script src="magento-dropin-es5.js" nomodule defer></script>
           <script src="magento-dropin-scripts.js" defer></script>
